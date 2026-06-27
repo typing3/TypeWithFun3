@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -89,7 +89,6 @@
             background: #FFFF00;
             padding: 5px 15px;
             border: 3px solid #000;
-            cursor: pointer;
         }
 
         .nav-links button {
@@ -173,15 +172,14 @@
             min-height: 200px;
             position: relative;
             user-select: none;
+            /* Added padding to prevent text sticking to borders */
+            padding: 20px; 
             background: #fff;
-            border: var(--border-width) solid #000;
-            padding: 20px;
-            box-shadow: var(--shadow-offset) var(--shadow-offset) 0px #000;
-            cursor: text;
+            border: 3px solid #000;
         }
 
         .char { color: #888; position: relative; white-space: pre-wrap; }
-        .char.correct { color: #000; font-weight: bold; }
+        .char.correct { color: #000; }
         .char.incorrect { background: #ff4d4d; color: #fff; }
         .char.current { 
             background: #ffff00; 
@@ -204,11 +202,9 @@
             color: #fff;
             padding: 3rem;
             margin-bottom: 2rem;
-            border: var(--border-width) solid #000;
-            box-shadow: var(--shadow-offset) var(--shadow-offset) 0px #FFFF00;
         }
 
-        .big-wpm { font-size: 6rem; font-family: var(--font-heading); color: #ffff00; }
+        .big-wpm { font-size: 6rem; font-family: var(--font-heading); }
 
         /* --- SETTINGS --- */
         .settings-row {
@@ -216,23 +212,20 @@
             justify-content: space-between;
             align-items: center;
             padding: 15px 0;
-            border-bottom: 4px dashed #000;
+            border-bottom: 2px solid #eee;
         }
 
         /* --- RESPONSIVENESS --- */
         @media (max-width: 600px) {
-            nav { flex-direction: column; gap: 15px; }
-            .nav-links { width: 100%; display: flex; justify-content: space-around; margin-top: 10px; }
-            .nav-links button { margin-left: 0; }
+            .nav-links { display: none; } /* Simplified for demo */
             .big-wpm { font-size: 3rem; }
-            #stats-bar { flex-direction: column; }
         }
     </style>
 </head>
 <body>
 
     <nav>
-        <div class="logo" onclick="router('home')">TYPE WITH FUN⚡</div>
+        <div class="logo">TYPE WITH FUN</div>
         <div class="nav-links">
             <button onclick="router('home')" id="nav-home" class="active">HOME</button>
             <button onclick="router('arena')" id="nav-arena">ARENA</button>
@@ -275,8 +268,9 @@
                 </select>
             </div>
         </div>
+        
         <div style="text-align: center; margin-top: 2rem;">
-            <button class="brutal-btn" style="font-size: 1.5rem; background: #ffff00;" onclick="startEngine()">ENGAGE ARENA 🚀</button>
+            <button class="brutal-btn" style="font-size: 1.5rem; background: #ffff00;" onclick="startSessionEngine()">START TRAINING 🚀</button>
         </div>
     </div>
 
@@ -289,3 +283,12 @@
             <div class="stat-box"><div class="stat-label">LIVES</div><div id="lives-val" class="stat-value">3/3</div></div>
         </div>
 
+        <div id="typing-area" onclick="refocusInput()"></div>
+        <input type="text" id="hidden-input" autocomplete="off" autocapitalize="off">
+    </div>
+
+    <!-- RESULTS PAGE -->
+    <div id="results" class="view-container">
+        <div class="brutal-card results-hero">
+            <h2 style="font-family: var(--font-heading); margin-bottom: 1rem;">RUN COMPLETE</h2>
+            <div id="final-wpm" class="big-wpm">0</div>
