@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TypeWithFun // Neo-Brutalist Typing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Syne:wght@800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <style>
+        /* --- NEO-BRUTALISM DESIGN SYSTEM --- */
+        :root {
+            --bg-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --accent: #FF3E00;
+            --surface: #ffffff;
+            --text: #000000;
+            --border-width: 4px;
+            --shadow-offset: 8px;
+            --font-main: 'Space Grotesk', sans-serif;
+            --font-heading: 'Syne', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-size-typing: 20px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: background 0.3s ease, transform 0.1s ease;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--text);
+            overflow-x: hidden;
+            padding-bottom: 50px;
+        }
+
+        /* --- UTILITIES --- */
+        .brutal-card {
+            background: var(--surface);
+            border: var(--border-width) solid #000;
+            box-shadow: var(--shadow-offset) var(--shadow-offset) 0px #000;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .brutal-btn {
+            background: #fff;
+            border: var(--border-width) solid #000;
+            box-shadow: 4px 4px 0px #000;
+            padding: 12px 24px;
+            font-weight: 800;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-family: var(--font-heading);
+            display: inline-block;
+        }
+
+        .brutal-btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px #000;
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .brutal-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px #000;
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #fff;
+            border-bottom: var(--border-width) solid #000;
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            background: #FFFF00;
+            padding: 5px 15px;
+            border: 3px solid #000;
+            cursor: pointer;
+        }
+
+        .nav-links button {
+            background: none;
+            border: none;
+            font-family: var(--font-heading);
+            font-weight: 800;
+            margin-left: 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 5px;
+        }
+
+        .nav-links button.active {
+            background: var(--accent);
+            color: white;
+            transform: rotate(-2deg);
+        }
+
+        /* --- VIEW MANAGEMENT --- */
+        .view-container {
+            max-width: 1000px;
+            margin: 3rem auto;
+            padding: 0 20px;
+            display: none;
+        }
+
+        .view-container.active {
+            display: block;
+            animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* --- HOME PAGE CONFIG --- */
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .config-item h3 {
+            margin-bottom: 1rem;
+            font-family: var(--font-heading);
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 3px solid #000;
+            font-family: var(--font-main);
+            font-weight: bold;
+            outline: none;
+        }
+
+        /* --- ARENA (THE ENGINE) --- */
+        #stats-bar {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-box {
+            background: #fff;
+            border: 3px solid #000;
+            padding: 10px 20px;
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .stat-label { font-size: 0.8rem; text-transform: uppercase; font-weight: 800; }
+        .stat-value { font-size: 1.5rem; font-family: var(--font-mono); font-weight: 800; color: var(--accent); }
+
+        #typing-area {
+            font-family: var(--font-mono);
+            font-size: var(--font-size-typing);
+            line-height: 1.6;
+            min-height: 200px;
+            position: relative;
+            user-select: none;
+            background: #fff;
+            border: var(--border-width) solid #000;
+            padding: 20px;
+            box-shadow: var(--shadow-offset) var(--shadow-offset) 0px #000;
+            cursor: text;
+        }
+
+        .char { color: #888; position: relative; white-space: pre-wrap; }
+        .char.correct { color: #000; font-weight: bold; }
+        .char.incorrect { background: #ff4d4d; color: #fff; }
+        .char.current { 
+            background: #ffff00; 
+            border-bottom: 3px solid #000;
+            animation: pulse 0.5s infinite alternate;
+        }
+
+        @keyframes pulse { from { opacity: 1; } to { opacity: 0.6; } }
+
+        #hidden-input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* --- RESULTS PAGE --- */
+        .results-hero {
+            text-align: center;
+            background: #000;
+            color: #fff;
+            padding: 3rem;
+            margin-bottom: 2rem;
+            border: var(--border-width) solid #000;
+            box-shadow: var(--shadow-offset) var(--shadow-offset) 0px #FFFF00;
+        }
+
+        .big-wpm { font-size: 6rem; font-family: var(--font-heading); color: #ffff00; }
+
+        /* --- SETTINGS --- */
+        .settings-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 4px dashed #000;
+        }
+
+        /* --- RESPONSIVENESS --- */
+        @media (max-width: 600px) {
+            nav { flex-direction: column; gap: 15px; }
+            .nav-links { width: 100%; display: flex; justify-content: space-around; margin-top: 10px; }
+            .nav-links button { margin-left: 0; }
+            .big-wpm { font-size: 3rem; }
+            #stats-bar { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo" onclick="router('home')">TYPE WITH FUN⚡</div>
+        <div class="nav-links">
+            <button onclick="router('home')" id="nav-home" class="active">HOME</button>
+            <button onclick="router('arena')" id="nav-arena">ARENA</button>
+            <button onclick="router('results')" id="nav-results">RESULTS</button>
+            <button onclick="router('settings')" id="nav-settings">SETTINGS</button>
+        </div>
+    </nav>
+
+    <!-- HOME PAGE -->
+    <div id="home" class="view-container active">
+        <div class="brutal-card">
+            <h1 style="font-family: var(--font-heading); font-size: 3rem; margin-bottom: 1rem;">READY TO CRUSH IT?</h1>
+            <p>Select your training parameters below. Neo-Brutalism style typing for high-performance humans.</p>
+        </div>
+
+        <div class="config-grid">
+            <div class="brutal-card config-item">
+                <h3>🕹️ MODE</h3>
+                <select id="mode-select">
+                    <option value="quick">Quick Test (60s)</option>
+                    <option value="practice">Practice Sandbox</option>
+                    <option value="survival">Survival (3 Lives)</option>
+                </select>
+            </div>
+            <div class="brutal-card config-item">
+                <h3>📚 CONTENT</h3>
+                <select id="content-select">
+                    <option value="words">Random Words</option>
+                    <option value="quotes">Famous Quotes</option>
+                    <option value="books">Book Excerpts</option>
+                    <option value="paragraphs">Paragraphs</option>
+                </select>
+            </div>
+            <div class="brutal-card config-item">
+                <h3>🔥 DIFFICULTY</h3>
+                <select id="difficulty-select">
+                    <option value="easy">Easy (Lowercase)</option>
+                    <option value="medium">Medium (Punctuation)</option>
+                    <option value="hard">Hard (Advanced Mix)</option>
+                </select>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 2rem;">
+            <button class="brutal-btn" style="font-size: 1.5rem; background: #ffff00;" onclick="startEngine()">ENGAGE ARENA 🚀</button>
+        </div>
+    </div>
+
+    <!-- ARENA VIEW -->
+    <div id="arena" class="view-container">
+        <div id="stats-bar">
+            <div class="stat-box"><div class="stat-label">TIME</div><div id="timer-val" class="stat-value">60s</div></div>
+            <div class="stat-box"><div class="stat-label">SPEED</div><div id="wpm-val" class="stat-value">0 WPM</div></div>
+            <div class="stat-box"><div class="stat-label">ACCURACY</div><div id="acc-val" class="stat-value">100%</div></div>
+            <div class="stat-box"><div class="stat-label">LIVES</div><div id="lives-val" class="stat-value">3/3</div></div>
+        </div>
+
